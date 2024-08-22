@@ -1,0 +1,350 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import os
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import matthews_corrcoef, accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+df=pd.read_csv("/content/HeatPump-bc12-s1-088.csv");
+
+TARGET_VAR = 'anomaly'
+HIDDEN_VARS = ['Time_s', 'COP']
+X= df.drop(columns=[TARGET_VAR] + HIDDEN_VARS)
+y= df[TARGET_VAR]
+df.head()
+df.info()plt.figure(figsize=(20, 20));
+sns.heatmap(df.corr(), annot=True);
+plt.show()
+null_counts = df.isnull().sum()
+print("Null values in each column:")
+print(null_counts)
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+
+X_scaled = scaler.fit_transform(X)
+
+
+n_components = 4
+
+
+pca = PCA(n_components=n_components)
+
+
+X_pca = pca.fit_transform(X_scaled)
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=3)
+
+model = LogisticRegression(C=1.4772, max_iter=700, n_jobs=15,
+                   random_state=3, tol=1e-04)
+
+
+model.fit(X_train, y_train)
+
+y_pred= model.predict((X_test))
+
+accuracy = accuracy_score(y_test, y_pred)
+
+mse = mean_squared_error(y_test, y_pred)
+
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+
+print(f"Accuracy: {accuracy}")
+print(f"MSE: {mse}")
+print(f"RMSE: {rmse}")
+y_score = model.predict_proba((X_test))[:, 1]
+from sklearn.metrics import roc_curve,auc
+
+fpr, tpr, _ = roc_curve(y_test, y_score)
+
+roc_auc = auc(fpr, tpr)
+print(f"AUC: {roc_auc}")
+
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (AUC = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.legend(loc="lower right")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import accuracy_score
+
+
+mcc = matthews_corrcoef(y_test,	y_pred)
+print("MCC: %.3f" % mcc)
+
+acc = accuracy_score(y_test, y_pred)
+print("Accuracy: %.3f" % acc)
+from sklearn.metrics import confusion_matrix, classification_report
+plt.figure(figsize=(8, 6))
+
+sns.scatterplot(x=model.predict_proba(X_test)[:, 1], y=y_test, hue=y_test, marker='o', s=100)
+plt.xlabel('Predicted Probability')
+plt.ylabel('Actual Target Value')
+plt.title('Logistic Regression Results - Actual vs Predicted Probabilities')
+
+plt.plot([0, 1], [0, 1], linestyle='--', color='blue')
+
+plt.legend(title='Actual')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+print("Confusion Matrix:")
+conf_matrix=confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(3, 3))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix - Logistic Regression')
+plt.show()
+
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(bootstrap=False, class_weight='balanced_subsample',
+                       criterion='entropy', max_features=0.98,
+                       min_samples_leaf=3, n_estimators=49, n_jobs=20,
+                       random_state=3, verbose=False)
+
+
+model.fit((X_train), y_train)
+y_pred= model.predict((X_test))
+
+accuracy = accuracy_score(y_test, y_pred)
+
+mse = mean_squared_error(y_test, y_pred)
+
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+
+print(f"Accuracy: {accuracy}")
+print(f"MSE: {mse}")
+print(f"RMSE: {rmse}")
+y_score = model.predict_proba((X_test))[:, 1]
+from sklearn.metrics import roc_curve,auc
+
+fpr, tpr, _ = roc_curve(y_test, y_score)
+
+roc_auc = auc(fpr, tpr)
+print(f"AUC: {roc_auc}")
+
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (AUC = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.legend(loc="lower right")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x=model.predict_proba((X_test))[:, 1], y=y_test, hue=y_test, marker='o', s=100)
+plt.xlabel('Predicted Probability')
+plt.ylabel('Actual Target Value')
+plt.title('Random forest classifier- Actual vs Predicted Probabilities')
+plt.plot([0, 1], [0, 1], linestyle='--', color='blue')
+plt.legend(title='Actual')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+print("Confusion Matrix:")
+conf_matrix = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6, 4))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix - Random Forest')
+plt.show()
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+from sklearn.metrics import matthews_corrcoef, accuracy_score
+
+
+mcc = matthews_corrcoef(y_test, y_pred)
+print("MCC: %.3f" % mcc)
+
+
+acc = accuracy_score(y_test, y_pred)
+print("Accuracy: %.3f" % acc)
+from sklearn.tree import DecisionTreeClassifier
+
+
+model = DecisionTreeClassifier(max_depth=None, min_samples_split=2, min_samples_leaf=1,
+                                min_weight_fraction_leaf=0.0, max_features=None,
+                                random_state=3, max_leaf_nodes=None,
+                                class_weight=None, ccp_alpha=0.0)
+
+
+
+model.fit((X_train), y_train)
+
+
+y_pred = model.predict((X_test))
+
+
+accuracy = accuracy_score(y_test, y_pred)
+
+
+mse = mean_squared_error(y_test, y_pred)
+
+
+rmse = mean_squared_error(y_test, y_pred, squared=False)
+
+
+print(f"Accuracy: {accuracy}")
+print(f"MSE: {mse}")
+print(f"RMSE: {rmse}")
+from sklearn.metrics import matthews_corrcoef, accuracy_score
+
+
+mcc = matthews_corrcoef(y_test, y_pred)
+print("MCC: %.3f" % mcc)
+
+
+acc = accuracy_score(y_test, y_pred)
+print("Accuracy: %.3f" % acc)
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x=model.predict_proba((X_test))[:, 1], y=y_test, hue=y_test, marker='o', s=100)
+plt.xlabel('Predicted Probability')
+plt.ylabel('Actual Target Value')
+plt.title('Decision Tree Results - Actual vs Predicted Probabilities')
+plt.plot([0, 1], [0, 1], linestyle='--', color='blue')
+plt.legend(title='Actual')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+print("Confusion Matrix:")
+conf_matrix = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6, 4))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix - Decision Tree')
+plt.show()
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+from sklearn.metrics import roc_curve, auc
+
+y_score = model.predict_proba((X_test))[:, 1]
+
+
+fpr, tpr, _ = roc_curve(y_test, y_score)
+roc_auc = auc(fpr, tpr)
+
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (AUC = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.legend(loc="lower right")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+print(f"AUC: {roc_auc}")
+def get_X_y_h(self):
+        y_list = []
+        h_list = []
+        X_list = []
+        for df in self.database:
+            y_list.append(df[self.target_var])
+            h_list.append(df[self.hidden_vars])
+            X_list.append(df.drop(columns=self.hidden_vars + [self.target_var]))
+y_test_plot=df[TARGET_VAR]
+h_test_plot=df[HIDDEN_VARS]
+X_test_plot=df.drop(columns=[TARGET_VAR] + HIDDEN_VARS)
+X_test_plot=df.drop(columns=[TARGET_VAR] + HIDDEN_VARS)
+n_components = 4
+pca = PCA(n_components=n_components)
+def alert_trigger(horizon, proba, threshold):
+    df = pd.DataFrame({'proba': proba})
+    df['rolling_mean_proba'] = df.rolling(horizon).mean()
+    df['fault'] = 0
+    df.loc[df['rolling_mean_proba'] >= threshold, 'fault'] = 1.
+    return df['fault'].values
+
+def plot_proba(ax, y_true, y_prob, fault_var, fault_var_data, title=None):
+    ax.plot(range(len(y_true)), y_true, label='Ground truth', color='blue')
+    ax.plot(range(len(y_prob)), y_prob, '.', label='Fault Detection probability', color='orange')
+    # ax.legend()
+
+    if(title is not None):
+        ax.title.set_text(title)
+
+    axtwin0 = ax.twinx()
+    axtwin0.plot(range(len(fault_var_data)), fault_var_data, label=fault_var, color='grey')
+    axtwin0.legend()
+
+def plot_true_false(ax, y_true, y_pred, fault_var, fault_var_data, title=None):
+    df = pd.DataFrame({'true': y_true, 'pred' : y_pred})
+    df['t_pred'] = df.loc[df['true'] == df['pred'], 'pred']
+    df['f_pred'] = df.loc[df['true'] != df['pred'], 'pred']
+
+    ax.plot(range(len(df)) , y_true , label='Ground truth', color='blue')
+    ax.plot(range(len(df)), df['t_pred'], 'x', label='Correct Fault Detection', color='green')
+    ax.plot(range(len(df)), df['f_pred'], 'x', label='Wrong Fault Detection', color='red')
+
+    # ax.legend()
+
+    if(title is not None):
+        ax.title.set_text(title)
+
+    axtwin1 = ax.twinx()
+    axtwin1.plot(range(len(y_true)), fault_var_data, label=fault_var, color='grey')
+    axtwin1.legend()
+fault_var = 'COP'
+fault_var_label = 'COP [-]'
+
+titles = [
+    'Decrease of COP'
+]
+
+nb_test = 1
+fig = plt.figure(figsize=(15,4*nb_test))
+
+subfig = fig.subfigures(nrows=nb_test, ncols=1)
+subfig.suptitle(titles, fontsize='x-large')
+ax = subfig.subplots(nrows=1, ncols=2)
+
+y_data = y_test_plot.values.astype(np.float64)
+y_prob = model.predict_proba(X_test_plot)[:,1]
+y_pred = alert_trigger(horizon=144, proba=y_prob, threshold=0.5)
+fault_var_data = h_test_plot[fault_var].values.astype(np.float64)
+
+plot_proba(ax[0], y_data, y_prob, fault_var_label, fault_var_data)
+plot_true_false(ax[1], y_data, y_pred, fault_var_label, fault_var_data)
+
+
+
+
+
