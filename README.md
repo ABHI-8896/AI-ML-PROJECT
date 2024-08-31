@@ -31,8 +31,8 @@ This project involves building and evaluating machine learning models for fault 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/fault-detection-model.git
-   cd fault-detection-model
+   git clone https://github.com/ABHI-8896/AI-ML-PROJECT.git
+   cd AI-ML-PROJECT
     ```
 2 . **Install dependencies:**
      ``` pip install -r requirements.txt
