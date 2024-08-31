@@ -37,7 +37,7 @@ This project involves building and evaluating machine learning models for fault 
 2 . **Install dependencies:**
      ``` bash
      pip install -r requirements.txt
-      ````
+      ```
 3.**Run the analysis:**
  ```python analysis.py
  ```
