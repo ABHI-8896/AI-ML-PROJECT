@@ -34,12 +34,13 @@ This project involves building and evaluating machine learning models for fault 
    git clone https://github.com/ABHI-8896/AI-ML-PROJECT.git
    cd AI-ML-PROJECT
     ```
-2 . **Install dependencies:**
-     ``` bash
-     pip install -r requirements.txt
-      ```
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+
 3.**Run the analysis:**
- ```python analysis.py
+ ```bash
+python analysis.py
  ```
 ## File Structure
 
